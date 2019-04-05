@@ -162,7 +162,7 @@
      }
      ```
    - Terakhir, cetak outputnya dengan cara ```print(in, argc - 1);```
-2. Source code: [soal3.c](https://github.com/forfeitsch/SoalShift_modul3_B08/tree/master/soal2)
+2. Source code: [soal2.c](https://github.com/forfeitsch/SoalShift_modul3_B08/tree/master/soal2)
    **Penjelasan:**
    
    Program ini membuat dua buah server, server penjual dan server pembeli. 
