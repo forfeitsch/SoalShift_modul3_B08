@@ -7,8 +7,8 @@
 
 int WakeUp_Status = 0; // Status yang dimiliki Agmal
 int Spirit_Status = 100; // Status yang dimiliki Iraj
-int count_bangun = 0; // Untuk menghitung berapa kali perintah "WakeUp_Status" diterima berturut-turut
-int count_tidur = 0; // Untuk menghitung berapa kali perintah "Spirit_Status" diterima berturut-turut
+int count_bangun = 0; // Untuk menghitung berapa kali perintah "Agmal Ayo Bangun" diterima berturut-turut
+int count_tidur = 0; // Untuk menghitung berapa kali perintah "Iraj Ayo Tidur" diterima berturut-turut
 
 // Mutex untuk penanda sebuah fitur bisa dipakai atau tidak
 int stun_agmal = 0;
