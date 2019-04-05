@@ -130,6 +130,13 @@
 1. Source code: [soal1.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal1/soal1.c)
    
    **Penjelasan:**
+   
+   Program ini adalah program multithread dimana jumlah threadnya tergantung pada jumlah angka yang menjadi input program ini. Program ini memiliki satu variabel global yaitu ```luong res[100];``` untuk menampung hasil faktorial berupa long long int. Terdapat satu fungsi thread dan dua fungsi main, yaitu:
+   - ```void *factorial(void* argv)``` : Fungsi thread untuk menghitung faktorial secara paralel menggunakan pointer dari angka yang akan diproses sebagai inputnya
+   - ```void sort(luong *numbers, int count)``` : Fungsi untuk mengurutkan bilangan-bilangan dalam sebuah array long long int.
+   - ```void print(luong *arr, int count)``` : Fungsi untuk mencetak hasil program ke dalam terminal
+   
+   **Cara kerja:**
    - Pertama-tama untuk menangkap input angka-angka saat hendak mengeksekusi program, perlu ada penyesuaian di fungsi main(), sehingga menjadi ```int main(int argc, char *argv[])```
      - ```int argc``` : Argument count. Jumlah argumen yang ditangkap (termasuk nama program tersebut)
        Contoh: ```./soal1 6 3 4```, maka ```argc``` memiliki nilai 4
@@ -155,4 +162,17 @@
      }
      ```
    - Terakhir, cetak outputnya dengan cara ```print(in, argc - 1);```
-     
+ 
+3. Source code: [soal3.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal3/soal3.c)
+   
+   **Penjelasan**
+   
+   Program ini adalah program yang menggunakan 2 thread dalam eksekusinya. Program ini menggunakan bermacam-macam variabel global yang berfungsi sebagai stat. Di antaranya adalah:
+   - ```int WakeUp_Status``` : Status awal Agmal. Diinisialisasi dengan nilai awal 0
+   - ```int Spirit_Status``` : Status awal Iraj. Diinisialisasi dengan nilai awal 100
+   - ```int count_bangun``` : Untuk menghitung berapa kali perintah "Agmal Ayo Bangun" dipanggil. Diinisialisasi dengan nilai awal 0
+   - ```int count_tidur``` : Untuk menghitung berapa kali perintah "Iraj Ayo Tidur" dipanggil. Diinisialisasi dengan nilai awal 0
+   - ```int stun_agmal``` : Sebagai penanda perintah "Agmal Ayo Bangun" tidak bisa dilakukan.
+   - ```int stun_iraj``` : Sebagai penanda perintah "Iraj Ayo Tidur" tidak bisa dilakukan.
+   
+   
