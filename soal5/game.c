@@ -86,7 +86,7 @@ void standby_mode() {
 void battle_mode(int myhealth) {
     printf("Battle Mode\n");
     printf("Monster's Health : %d\n", myhealth);
-    printf("Enemy’s Health : %d\n", enemy_health_status);
+    printf("Enemyâ€™s Health : %d\n", enemy_health_status);
     printf("Choices:\n");
     printf("1. Attack\n");
     printf("2. Run\n");
@@ -105,7 +105,7 @@ void shop_mode() {
 int main() {
     char name[21];
     char mode = '1', input;
-    int bath_error = 0, input_error = 0, stock_error = 0, att = 0, def = 0, win = 0;
+    int bath_error = 0, input_error = 0, stock_error = 0, full = 0, eat = 0, bath = 0, att = 0, def = 0, win = 0;
 
     key_t key = 1234;
 
@@ -144,20 +144,37 @@ int main() {
                 printf("Bath is not ready yet.\n\n");
                 bath_error = 0;
             }
+            if(eat == 1) {
+                printf("%s is eating the food. He's now happy.\n", name);
+                if(full == 0) printf("\n");
+                eat = 0;
+            }
+            if(full == 1 && mode == '1') printf("%s looks like he's full right now.\n\n", name);
+            if(bath == 1) {
+                printf("%s is clean right now.\n\n", name);
+                bath = 0;
+            }
             standby_mode();
             input = mygetch();
             if(input == '1') {
                 mode = input;
-                food_stock--;
-                if(food_stock >= 0) {
-                    hunger_status += 15;
-                    if(hunger_status > 200) hunger_status = 200;
+                if(hunger_status < 200) {
+                    full = 0;
+                    food_stock--;
+                    if(food_stock >= 0) {
+                        hunger_status += 15;
+                        eat = 1;
+                        if(hunger_status > 200) hunger_status = 200;
+                        if(hunger_status == 200) full = 1;
+                    }
                 }
+                else full = 1;
             }
             else if(input == '2') {
                 mode = input;
                 if(bath_cooldown == 0) {
                     hygiene_status += 30;
+                    bath = 1;
                     if(hygiene_status > 100) hygiene_status = 100;
                     bath_cooldown = 20;
                     pthread_create(&(tid[3]), NULL, counting_down, NULL);
