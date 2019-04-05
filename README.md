@@ -1,6 +1,6 @@
 # SoalShift_modul3_B08
 
-### Soal
+## Soal
 1. Buatlah program C yang bisa menghitung faktorial secara parallel lalu menampilkan hasilnya secara berurutan
 
    Contoh:
@@ -126,4 +126,33 @@
    6. Pastikan terminal hanya mendisplay status **detik ini** sesuai scene terkait (hint: menggunakan system(“clear”))
 
 
-### Jawaban
+## Jawaban
+1. Source code: [soal1.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal1/soal1.c)
+   
+   **Penjelasan:**
+   - Pertama-tama untuk menangkap input angka-angka saat hendak mengeksekusi program, perlu ada penyesuaian di fungsi main(), sehingga menjadi ```int main(int argc, char *argv[])```
+     - ```int argc``` : Argument count. Jumlah argumen yang ditangkap (termasuk nama program tersebut)
+       Contoh: ```./soal1 6 3 4```, maka ```argc``` memiliki nilai 4
+     - ```char argv[]``` : Argument vector. Vektor yang berisi argumen-argumen yang masuk.
+       Contoh: ```./soal1 6 3 4```, maka isi ```argv[]``` adalah ```("soal1", "6", "3", "4")```
+   - Buat array untuk menampung angka-angka tersebut dan juga thread yang diperlukan sebanyak ```argc - 1```
+     ```
+     luong in[argc - 1];
+     pthread_t tid[argc - 1];
+     ```
+   - Sebelum dimasukkan ke dalam array ```in[argc - 1]```, convert dulu isi ```argv[]``` dari string menjadi long long int menggunakan ```atoll()```
+     ```
+     for(int i = 0; i < argc - 1; i++)
+        in[i] = atoll(argv[i + 1]);
+     ```
+   - Setelah itu urutkan angka-angka tersebut dengan cara ```sort(in, argc - 1);```
+   - Buat loop untuk membuat thread sebanyak jumlah angka yang dimasukkan. Thread yang telah dibuat akan sekaligus dijoinkan
+     ```
+     for(int i = 0; i < argc - 1; i++) {
+        luong *ptr = &in[i];
+        pthread_create(&(tid[i]), NULL, factorial, ptr);
+        pthread_join(tid[i], NULL);
+     }
+     ```
+   - Terakhir, cetak outputnya dengan cara ```print(in, argc - 1);```
+     
