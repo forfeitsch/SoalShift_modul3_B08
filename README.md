@@ -131,7 +131,7 @@
    
    **Penjelasan:**
    
-   Program ini adalah program multithread dimana jumlah threadnya tergantung pada jumlah angka yang menjadi input program ini. Program ini memiliki satu variabel global yaitu ```luong res[100];``` untuk menampung hasil faktorial berupa long long int. Terdapat satu fungsi thread dan dua fungsi main, yaitu:
+   Program ini adalah program multithread dimana jumlah threadnya tergantung pada jumlah angka yang menjadi input program ini. Program ini memiliki satu variabel global yaitu ```luong res[100];``` untuk menampung hasil faktorial berupa long long int. Terdapat satu fungsi thread dan dua fungsi utama, yaitu:
    - ```void *factorial(void* argv)``` : Fungsi thread untuk menghitung faktorial secara paralel menggunakan pointer dari angka yang akan diproses sebagai inputnya
    - ```void sort(luong *numbers, int count)``` : Fungsi untuk mengurutkan bilangan-bilangan dalam sebuah array long long int.
    - ```void print(luong *arr, int count)``` : Fungsi untuk mencetak hasil program ke dalam terminal
@@ -166,7 +166,7 @@
  
 3. Source code: [soal3.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal3/soal3.c)
    
-   **Penjelasan**
+   **Penjelasan:**
    
    Program ini adalah program dimana 2 orang bernama Agmal dan Iraj saling bersaing dalam mempengaruhi kebiasaan masing-masing. Program ini menggunakan 2 thread dalam eksekusinya. Program ini menggunakan bermacam-macam variabel global yang berfungsi sebagai stat. Di antaranya adalah:
    - ```int WakeUp_Status``` : Status awal Agmal. Diinisialisasi dengan nilai awal 0
@@ -226,3 +226,123 @@
      ```
 
 4. asd
+5. Source code: [game.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal5/game.c)
+   
+   **Penjelasan:**
+   
+   Program ini adalah game multithread tentang sebuah monster. Pemain bisa melakukan apa saja dengan mosnter ini. Yang pasti jika monster ini tidak dirawat dengan baik, monster akan mati dan pemain dinyatakan kalah. Terdapat banyak variabel global yang memuat stat dari monster dan juga mekanisme dalam game seperti:
+   - ```int alive``` : Sebagai penanda apakah monster ini masih hidup atau tidak
+   - ```int hunger_status``` : Pengukur seberapa butuhnya monster ini terhadap makanan. Diinisialisasi dengan nilai awal 200
+   - ```int hygiene_status``` : Pengukur kebersihan si monster. Diinisialisasi dengan nilai awal 100
+   - ```int health_status``` : Jumlah nyawa si monster. Diinisialisasi dengan nilai awal 300
+   - ```int food_stock``` : Stok makanan yang dimiliki pemain untuk memberi makan monster. Diberikan 5 stok makanan pada awal permainan
+   - ```int bath_cooldown``` : Cooldown untuk memandikan monster
+   - ```int battle_status``` : Penanda apakah monster berada dalam keadaan battle atau tidak
+   - ```int enemy_health_status``` : Jumlah nyawa monster lawan. Direfresh menjadi 100 setiap awal battle
+   - ```int *shop_stock``` : Stok makanan di shop. Hanya bisa diisi ulang stoknya di program shop dari penjual (terpisah dari game)
+   
+   Fungsi threadnya terdiri dari:
+   - ```void *hunger_degen(void *argv)``` : Thread untuk degenerate ```hunger_status``` sebanyak 5 poin tiap 10 detik. Disable ketika battle
+   - ```void *hygiene_degen(void *argv)``` : Thread untuk degenerate ```hygiene_status``` sebanyak 10 poin tiap 30 detik. Disable ketika battle
+   - ```void *health_regen(void *argv)``` : Thread untuk regenerate ```health_status``` sebanyak 5 poin tiap 10 detik. Disable ketika battle
+   - ```void *counting_down(void *argv)``` : Thread untuk countdown ```bath_cooldown``` tiap detiknya
+   
+   Fungsi utama terdiri dari:
+   - ```int mygetch(void)``` : Fungsi untuk menangkap input tanpa menggunakan tombol enter
+   - ```void standby_mode()``` : Fungsi untuk mencetak main menu dalam Standby Mode
+   - ```void battle_mode(int myhealth)``` : Fungsi untuk mencetak main menu dalam Battle Mode
+   - ```void shop_mode()``` : Fungsi untuk mencetak main menu dalam Shop Mode
+   
+   **Cara Kerja:**
+   - Siapkan variabel untuk menampung nama, mode menu, dan penanda-penanda untuk error dan kondisi tertentu
+     ```
+     char name[21];
+     char mode = '1', input;
+     int bath_error = 0, input_error = 0, stock_error = 0, full = 0, eat = 0, bath = 0, att = 0, def = 0, win = 0;
+     ```
+   - Variabel ```shop_stock``` adalah variabel yang akan dipakai untuk 2 program, maka metode yang dilakukan adalah Shared Memory. Kita inisialisasi dulu lalu isi ```shop_stock``` diberi nilai awal 5
+     ```
+     key_t key = 1234;
+
+     int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
+     shop_stock = shmat(shmid, NULL, 0);
+
+     *shop_stock = 5;
+     ```
+   - Akan muncul nama gamenya, lalu program meminta pemain memasukkan nama untuk monsternya. Nama ini akan dipakai untuk keperluan game nantinya
+   - Semua thread yang berisi regenerasi dan degenerasi dibuat di sini
+     ```
+     pthread_t tid[4];
+     pthread_create(&(tid[0]), NULL, hunger_degen, NULL);
+     pthread_create(&(tid[1]), NULL, hygiene_degen, NULL);
+     pthread_create(&(tid[2]), NULL, health_regen, NULL);
+     ```
+   - Setiap memunculkan menu tertentu, program akan selalu membersihkan tampilan terminal menggunakan ```system("clear")```
+   - Sebelum memunculkan menu, semua bentuk error atau notifikasi akan dicetak terlebih dahulu
+     
+     Contoh: Input error
+     ```
+     if(input_error == 1) {
+            printf("Input invalid!\n\n");
+            input_error = 0;
+     }
+     ```
+   - Setiap mode main menu akan menampilkan menu-menu yang tersedia dengan memanggil fungsi masing-masing mode, lalu menangkap input dari pemain
+     
+     Contoh: Standby Mode
+     ```
+     standby_mode();
+     input = mygetch();
+     ```
+   - Cara tiap mode meresponi input dari pemain berbeda-beda, di antaranya:
+     - **Standby Mode**
+       - Jika inputnya 1, maka monster akan diberi makan, menambah ```hunger_status``` dan mengurangi ```food_stock```. Jika monster kenyang, monster akan menolak untuk makan, sehingga tidak ada perubahan apapun. Demikian pula ketika stok makanan habis
+       - Jika inputnya 2, maka monster akan dimandikan, menambah ```hygiene_status``` dan mengaktifkan thread ```counting_down```. Selama cooldown aktif, monster tidak bisa dimandikan
+       - Jika inputnya 3, maka monster akan memasuki Battle Mode. Semua thread regen dan degen yang berjalan akan dihentikan sementara hingga monster keluar dari Battle Mode
+       - Jika inputnya 4, maka pemain akan dibawa ke dalam Shop Mode, di mana pemain bisa membeli makanan hingga stok makanan di toko habis. Stok di toko hanya bisa diisi ulang lewat program yang terpisah
+       - Jika inputnya 5, pemain akan keluar dari permainan dengan menerima pesan "Thank You For Playing!"
+     - **Battle Mode**
+       - Jika inputnya 1, maka monster pemain akan menyerang monster lawan. Jika masih ada sisa nyawa dari monster lawan, monster pemain juga akan diserang. Jika nyawa monster pemain habis, maka pemain dinyatakan kalah
+       - Jika inputnya 2, maka monster pemain akan dikembalikan ke Standby Mode. Thread-thread regen dan degen akan kembali berjalan dengan semestinya
+     - **Shop Mode**
+       - Jika inputnya 1, maka stok makanan toko akan berkurang seiringan dengan pertambahan stok makanan pemain hingga stok makanan di toko habis.
+       - Jika inputnya 2, maka pemain akan dikembalikan ke Standby Mode
+   - Jika input yang diterima bukan angka-angka yang telah disebutkan di atas, maka main menu akan ditampilkan ulang dengan pesan input error
+   - Jika program sempat keluar dari loop, maka monster dianggap mati. Pesan kematian akan ditampilkan di sini
+     ```
+     printf("\nYour monster is dead because of ");
+     if(health_status == 0) printf("running out of health. ");
+     else if(hunger_status <= 0) printf("starvation. ");
+     else if(hygiene_status <= 0) printf("your carelessness of hygiene. ");
+     printf("Game Over.\n");
+     ```
+   - Shared memory diakhiri di sini sebelum program berakhir
+     ```
+     shmdt(shop_stock);
+     shmctl(shmid, IPC_RMID, NULL);
+     ```
+   Source code: [shop.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal5/shop.c)
+   
+   **Penjelasan:**
+   
+   Program ini adalah program khusus untuk penjual di shop pada game.c. Program ini hanya memuat beberapa fungsi dan variabel yang dimiliki oleh program game.c seperti ```int *shop_stock``` dan ```int mygetch(void)```. Fungsi baru yang dimiliki oleh program ini adalah ```restock()```, untuk menampilkan main menu Shop Mode versi penjual.
+   
+   **Cara Kerja:**
+   - Siapkan variabel untuk menampung input, berikut dengan penanda errornya. Kemudian inisialisasi metode Shared Memory seperti berikut:
+     ```
+     char input;
+     int input_error = 0;
+     key_t key = 1234;
+
+     int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
+     shop_stock = shmat(shmid, NULL, 0);
+     ```
+   - Jika inputnya 1, stok makanan di toko akan langsung dikembalikan ke nilai default = 5
+   - Jika inputnya 2, maka program akan melakukan proses terminasi
+   - Input selain di atas akan memunculkan pesan error
+   - Proses terminasinya adalah mengakhiri metode Shared Memory dengan cara sebagai berikut:
+     ```
+     shmdt(shop_stock);
+     shmctl(shmid, IPC_RMID, NULL);
+     ```
+     
