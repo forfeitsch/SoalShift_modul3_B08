@@ -162,8 +162,63 @@
      }
      ```
    - Terakhir, cetak outputnya dengan cara ```print(in, argc - 1);```
-2. asd
- 
+2. Source code: [soal3.c](https://github.com/forfeitsch/SoalShift_modul3_B08/tree/master/soal2)
+   **Penjelasan:**
+   
+   Program ini membuat dua buah server, server penjual dan server pembeli. 
+   
+   Server Penjual memiliki Client yang terkoneksi ke server penjual hanya bisa menambah stok
+      - Cara menambah stok: client yang terkoneksi ke server penjual mengirim string “tambah” ke server lalu stok bertambah 1
+   Saya menggunakan fungsi dan thread untuk melakukan pengerjaannya, fungsi di bawah ini :
+   ```
+   int tambah(){
+
+    struct sockaddr_in address;
+    int valread;
+    struct sockaddr_in serv_addr;
+    if ((st_Tambah = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+   ```
+   Server Pembeli memiliki Client yang terkoneksi ke server pembeli hanya bisa mengurangi stok
+      - Cara mengurangi stok: client yang terkoneksi ke server pembeli mengirim string “beli” ke server lalu stok berkurang 1
+   Saya menggunakan fungsi dan thread untuk melakukan pengerjaannya, fungsi di bawah ini :
+
+   ```
+   int beli(){
+    struct sockaddr_in address;
+    int valread;
+    struct sockaddr_in serv_addr;
+    if ((st_Beli = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+   ```
+   Server pembeli akan mengirimkan info ke client yang terhubung dengannya apakah transaksi berhasil atau tidak berdasarkan ketersediaan stok
+      - Jika stok habis maka client yang terkoneksi ke server pembeli akan mencetak “transaksi gagal”
+      - Jika stok masih ada maka client yang terkoneksi ke server pembeli akan mencetak “transaksi berhasil”
+   ```  
+   void *beli( void *ptr ){ //program untuk menjalankan pengurangan
+
+    char buffer[1024], *input;
+
+    while(1){
+        read( new_socket , buffer, 1024);
+
+         if(!strcmp(buffer, "beli")){
+            if(*st > 0){
+                *st = *st - 1;
+                input = "transaksi berhasil";
+            }
+            else input = "transaksi gagal";
+
+            send(new_socket , input , strlen(input) , 0 );
+         }
+      }
+   }
+   ```
+   
 3. Source code: [soal3.c](https://github.com/forfeitsch/SoalShift_modul3_B08/blob/master/soal3/soal3.c)
    
    **Penjelasan:**
