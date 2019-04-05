@@ -184,45 +184,45 @@
    - Tangkap inputnya yang berupa string
      ```
      char cmd[100];
-	  scanf("%[^\n]s", cmd);
-	  getchar();
+     scanf("%[^\n]s", cmd);
+     getchar();
      ```
    - Jika yang tertangkap adalah perintah "Agmal Ayo Bangun", WakeUp_Status bertambah 15 poin, count_bangun diincrement. Ketika count_bangun menyentuh angka 3, thread ```suspend_Spirit``` akan dipanggil. Ketika perintah berhasil dijalankan, program akan mencetak "Agmal Telah Mendengarmu"
      ```
      if(strcmp(cmd, "Agmal Ayo Bangun") == 0 && stun_agmal == 0){
-			WakeUp_Status += 15;
-			count_bangun++;
-			if(count_bangun == 3){
-				count_bangun == 0;
-				pthread_create(&(tid[0]), NULL, suspend_Spirit, NULL);
-			}
-			printf("Agmal Telah Mendengarmu\n\n");
-	  }
+	 WakeUp_Status += 15;
+	 count_bangun++;
+	 if(count_bangun == 3){
+		count_bangun == 0;
+		pthread_create(&(tid[0]), NULL, suspend_Spirit, NULL);
+	 }
+     	 printf("Agmal Telah Mendengarmu\n\n");
+     }
      if(stun_agmal == 1) printf("Fitur Agmal Ayo Bangun disabled 10 s\n\n");
      ```
    - Jika yang tertangkap adalah perintah "Iraj Ayo Tidur", Spirit_Status berkurang 20 poin, count_tidur diincrement. Ketika count_tidur menyentuh angka 3, thread ```suspend_WakeUp``` akan dipanggil. Ketika perintah berhasil dijalankan, program akan mencetak "Iraj Telah Mendengarmu"
      ```
      else if(strcmp(cmd, "Iraj Ayo Tidur") == 0 && stun_iraj == 0){
-			Spirit_Status -= 20;
-			count_tidur++;
-			if(count_tidur == 3){
-				count_tidur == 0;
-				pthread_create(&(tid[1]), NULL, suspend_WakeUp, NULL);
-			}
-			printf("Iraj Telah Mendengarmu\n\n");
-	  }
+	 Spirit_Status -= 20;
+	 count_tidur++;
+	 if(count_tidur == 3){
+	     count_tidur == 0;
+   	     pthread_create(&(tid[1]), NULL, suspend_WakeUp, NULL);
+	 }
+         printf("Iraj Telah Mendengarmu\n\n");
+     }
      if(stun_iraj == 1) printf("Fitur Iraj Ayo Tidur disabled 10 s\n\n");
      ```
    - Program akan melakukan 2 poin di atas berkali-kali hingga WakeUp_Status menyentuh angka 100 atau Spirit_Status menyentuh angka 0. Program akan mencetak output berikut sebelum berhenti.
      ```
      if(WakeUp_Status >= 100){
-			printf("Agmal Terbangun, mereka bangun pagi dan berolahraga\n\n");
-			break;
-	  }
-	  if(Spirit_Status <= 0){
-			printf("Iraj ikut tidur, dan bangun kesiangan bersama Agmal\n\n");
-			break;
-	  }
+	 printf("Agmal Terbangun, mereka bangun pagi dan berolahraga\n\n");
+	 break;
+     }
+     if(Spirit_Status <= 0){
+         printf("Iraj ikut tidur, dan bangun kesiangan bersama Agmal\n\n");
+	 break;
+     }
      ```
 
 4. asd
